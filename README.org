@@ -1,3 +1,31 @@
 #+TITLE: UOJ Problems
 
-A collection of UVa UOJ problem solutions
+A collection of UVa UOJ problem solutions:
+
+* Cpp > Python in your submissions if you're sane
+#+begin_note
+I love python. Write in it to make sure that you got the algorithm
+right (proof of concept). However, if you do not want to try to
+understand why UOJ does not function really well with the ~queue~
+library, especially with deques and stacks... use cpp.
+#+end_note
+
+For everyone trying python submissions in UVa UOJ, if you care about
+your statistics, don't submit python solutions. Something peculiar is
+going on with the way python scripts get executed in the UOJ. If you
+check for example the 10079 (pizza cutting) example, which I've
+written in both cpp and python, producing the very same output to the
+same input, python got flagged as WA and cpp got instantly accepted.
+
+
+There are other problems of that nature I have encountered as well.
+Many times, I have tried creating the longest possible input, to see
+if my algorithm was sufficient for python (the slowest language
+available) to pass the 3s (or the problem specific) time boundary: In
+many cases, the very same code that run in less than 1s on my
+computer, which I have to admit is by no means a supercomputer of any
+sort, took a time limit on the judge. I even remember a case in which
+both python and cpp took almost the same time on my computer (~1s),
+and python resulted in TL, while cpp (obviously) passed. 
+
+#  LocalWords:  UOJ UVa

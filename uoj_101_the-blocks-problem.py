@@ -1,49 +1,48 @@
-# I'm thinking of creating an array of stacks:
-# - n-1 spaces:
-#   - if stack[n] is not empty
-
-
-### Step by step on the input
- #| A | B | Step     | 0 | 1         | 2 | 3 | 4 |       5 |     6 | 7 | 8 | 9 |
- #|---+---+----------+---+-----------+---+---+---+---------+-------+---+---+---|
- #|   |   |          | 0 | 1         | 2 | 3 | 4 |       5 |     6 | 7 | 8 | 9 |
- #| 9 | 1 | MoveOnto | 0 | 1,9       | 2 | 3 | 4 |       5 |     6 | 7 | 8 |   |
- #| 8 | 1 | MoveOver | 0 | 1,9,8     | 2 | 3 | 4 |       5 |     6 | 7 |   |   |
- #| 7 | 1 | MoveOver | 0 | 1,9,8,7   | 2 | 3 | 4 |       5 |     6 |   |   |   |
- #| 6 | 1 | MoveOver | 0 | 1,9,8,7,6 | 2 | 3 | 4 |       5 |       |   |   |   |
- #| 8 | 6 | pileOver | 0 | 1,9       | 2 | 3 | 4 |       5 | 8,7,6 |   |   |   |
- #| 8 | 5 | pileOver | 0 | 1,9       | 2 | 3 | 4 | 5,8,7,6 |       |   |   |   |
- #| 2 | 1 | moveOver | 0 | 1,9,2     |   | 3 | 4 | 5,8,7,6 |       |   |   |   |
- #| 4 | 9 | moveOver | 0 | 1,9,2,4   |   | 3 |   | 5,8,7,6 |       |   |   |   |
-
-# The above shows me that there is something peculiar:
-## Need to maintain location of all elements
-## why does pile 8 over 6 simply move to the blank 6 instead of going 6,7,8?
-
 numberOfBlocks = int(input())
 
 currLocation = [int(i) for i in range(numberOfBlocks)]
-blockPositions = [list([]) * numberOfBlocks]
+blocks = [list([i]) for i in range(numberOfBlocks)]
 
-def move(a,b,arg):
-    '''Move only a'''
-    if arg == "onto":
-        # Move a on top of b, while returning anything on a,b to their initial positions
-        print("move onto")
-    else:
+## Validated
+# Does not work properly, when l is the top element
+def clearOnTopOf(l):
+    '''Delete all elements on top of l moving them to their default position. Does not delete l'''
+    # Find the location of value
+    valueIndex = 0
+    for i in range(len(blocks[currLocation[l]])):
+        if blocks[currLocation[l]][i] == l:
+            valueIndex = i
+            break
+    tmpArr = blocks[currLocation[l]][valueIndex+1:]
+    blocks[currLocation[l]] = blocks[currLocation[l]][:valueIndex+1]
+
+    for i in range(len(tmpArr)):
+        currLocation[tmpArr[i]] = tmpArr[i]
+        blocks[tmpArr[i]] = [tmpArr[i]]
+
+def pile(a,b):
+    '''Move stack on top of A to the stack where B is'''
+    valueIndex = 0
+    for i in range(len(blocks[currLocation[a]])):
+        if blocks[currLocation[a]][i] == a:
+            valueIndex = i
+            break
+    tmpArr = blocks[currLocation[a]][valueIndex:]
+    blocks[currLocation[a]] = blocks[currLocation[a]][:valueIndex]
+    for i in tmpArr:
+        blocks[currLocation[b]].append(i)
+        currLocation[i] = currLocation[b]
+
+def move(a,b):
+    '''Move only a on top of B's location(may clear elements)'''
+    clearOnTopOf(a)
+    # Delete a
+    blocks[currLocation[a]] = blocks[currLocation[a]][0:-1]
+    currLocation[a] = currLocation[b]
+    blocks[currLocation[b]].append(a)
+    blocks[a] = []
+    # else:
         # Move a on top of the stack in which b exists, anything on top of a goes to initial position
-        print("move over")
-
-
-def pile(a,b,arg):
-    '''Move the stack on top of a'''
-    if arg == "onto":
-        # Move the stack of a on top of b, while returning anything on b to their initial positions
-        print("pile onto")
-    else:
-        # Move the stack of a on top of the stack of b
-        print("pile over")
-
 
 
 while True:
@@ -52,8 +51,27 @@ while True:
     except ValueError:
         break # This also catches quit I hope
 
+    a = int(a)
+    b = int(b)
+
+    # Check for illegal commands
+    # print(f"{a} {command},{arg} {b}")
+    if a == b or currLocation[a] == currLocation[b]:
+        # print("\tIllegal Move")
+        continue;
+
+    if arg == "onto":
+        clearOnTopOf(b)
+
     if command == "move":
-        move(a,b,arg)
+        move(a,b)
     else:
-        pile(a,b,arg)
+        pile(a,b)
+    # print(blocks)
+
+for index in range(numberOfBlocks):
+    print(f"{index}:",end="")
+    for element in blocks[index]:
+        print(f" {element}",end="")
+    print()
 

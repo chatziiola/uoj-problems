@@ -25,6 +25,3 @@ while n != 0:
         print(f"f91({n}) = {lessthanhundred[n]}")
             
     n = int(input())
-
-
-
